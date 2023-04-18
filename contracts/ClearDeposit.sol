@@ -12,8 +12,7 @@ contract ClearDeposit is Initializable, OwnableUpgradeable, PausableUpgradeable 
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 
     IERC20Upgradeable public token;
-    mapping(address => uint256) public deposits;
-    mapping(address => uint256) public lockedBalanceOf;
+    mapping(address => uint256) public depositOf;
     EnumerableSetUpgradeable.AddressSet private _managerWhitelist;
 
     // MODIFIERS
@@ -30,32 +29,20 @@ contract ClearDeposit is Initializable, OwnableUpgradeable, PausableUpgradeable 
 
     function deposit(uint256 amount) external whenNotPaused {
         token.transferFrom(msg.sender, address(this), amount);
-        deposits[msg.sender] += amount;
-        lockedBalanceOf[msg.sender] += amount;
+        depositOf[msg.sender] += amount;
     }
 
-    function withdraw(uint256 amount) external whenNotPaused {
-        require(amount <= unlockedBalanceOf(msg.sender), ExceptionsLibrary.EXCEEDS_UNLOCKED_BALANCE);
+    function withdrawToAccount(address depositor, uint256 amount) external onlyManager whenNotPaused {
+        require(amount <= depositOf[depositor], ExceptionsLibrary.INVALID_AMOUNT);
 
-        deposits[msg.sender] -= amount;
-        token.transfer(msg.sender, amount);
-    }
-
-    function unlock(address depositor, uint256 amount) external onlyManager whenNotPaused {
-        require(amount <= lockedBalanceOf[depositor], ExceptionsLibrary.EXCEEDS_LOCKED_BALANCE);
-        lockedBalanceOf[depositor] -= amount;
-    }
-
-    function lock(address depositor, uint256 amount) external whenNotPaused {
-        require(amount <= unlockedBalanceOf(depositor), ExceptionsLibrary.EXCEEDS_UNLOCKED_BALANCE);
-        lockedBalanceOf[depositor] += amount;
+        depositOf[depositor] -= amount;
+        token.transfer(depositor, amount);
     }
 
     function appealTransfer(address from, address to, uint256 amount) external onlyManager whenNotPaused {
-        require(amount <= deposits[msg.sender], ExceptionsLibrary.INVALID_AMOUNT);
+        require(amount <= depositOf[from], ExceptionsLibrary.INVALID_AMOUNT);
 
-        deposits[from] -= amount;
-        lockedBalanceOf[msg.sender] -= amount;
+        depositOf[from] -= amount;
         token.transfer(to, amount);
     }
 
@@ -75,9 +62,5 @@ contract ClearDeposit is Initializable, OwnableUpgradeable, PausableUpgradeable 
 
     function whitelistedManagers() external view returns (address[] memory) {
         return _managerWhitelist.values();
-    }
-
-    function unlockedBalanceOf(address account) public view returns (uint256) {
-        return deposits[account] - lockedBalanceOf[account];
     }
 }

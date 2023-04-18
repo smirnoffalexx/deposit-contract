@@ -89,12 +89,9 @@ describe("ClearDeposit", function () {
                 .increaseAllowance(clearDeposit.address, amount);
             await expect(clearDeposit.connect(otherAccount).deposit(amount)).to
                 .be.not.reverted;
-            expect(await clearDeposit.deposits(otherAccount.address)).to.equal(
+            expect(await clearDeposit.depositOf(otherAccount.address)).to.equal(
                 amount
             );
-            expect(
-                await clearDeposit.lockedBalanceOf(otherAccount.address)
-            ).to.equal(amount);
             expect(await erc20Mock.balanceOf(clearDeposit.address)).to.equal(
                 amount
             );
@@ -107,8 +104,9 @@ describe("ClearDeposit", function () {
                 deployClearDepositFixture
             );
 
-            expect(clearDeposit.addManagerToWhitelist(otherAccount.address)).to
-                .be.not.reverted;
+            await expect(
+                clearDeposit.addManagerToWhitelist(otherAccount.address)
+            ).to.be.not.reverted;
             expect(
                 await clearDeposit.isManagerWhitelisted(otherAccount.address)
             ).to.equal(true);
@@ -143,7 +141,7 @@ describe("ClearDeposit", function () {
                 deployClearDepositFixture
             );
 
-            expect(
+            await expect(
                 clearDeposit.removeManagerFromWhitelist(otherAccount.address)
             ).to.be.not.reverted;
             expect(
