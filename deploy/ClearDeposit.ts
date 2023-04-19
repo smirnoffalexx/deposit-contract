@@ -9,6 +9,6 @@ const deployFunction: DeployFunction = async function ({
 
 export default deployFunction;
 
-deployFunction.dependencies = ["TokenMock"];
+deployFunction.dependencies = ["ERC20Mock"];
 
 deployFunction.tags = ["ClearDeposit"];

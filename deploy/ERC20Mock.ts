@@ -12,4 +12,4 @@ const deployFunction: DeployFunction = async function ({
 
 export default deployFunction;
 
-deployFunction.tags = ["TokenMock"];
+deployFunction.tags = ["ERC20Mock"];
