@@ -23,6 +23,9 @@ contract ClearDeposit is Initializable, OwnableUpgradeable, PausableUpgradeable 
     }
 
     function initialize(address _token) external initializer {
+        __Ownable_init();
+        __Pausable_init();
+
         token = IERC20Upgradeable(_token);
         _managerWhitelist.add(msg.sender);
     }
@@ -52,6 +55,14 @@ contract ClearDeposit is Initializable, OwnableUpgradeable, PausableUpgradeable 
 
     function removeManagerFromWhitelist(address account) external onlyOwner {
         require(_managerWhitelist.remove(account), ExceptionsLibrary.ALREADY_NOT_WHITELISTED);
+    }
+
+    function pause() external onlyOwner {
+        _pause();
+    }
+
+    function unpause() external onlyOwner {
+        _unpause();
     }
 
     // VIEW FUNCTIONS

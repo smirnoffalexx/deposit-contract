@@ -24,7 +24,7 @@ task("deploy:clearDeposit", "Deploy ClearDeposit").setAction(async function (
     };
 
     // Get ERC20Mock
-    const erc20Mock = await getContract("ERC20Mock");
+    const erc20Mock = await getContract("USDTMock");
 
     // Deploy ClearDeposit
     const clearDeposit = await deployProxy("ClearDeposit", [erc20Mock.address]);

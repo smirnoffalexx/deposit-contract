@@ -5,8 +5,8 @@ const deployFunction: DeployFunction = async function ({
     run,
 }: HardhatRuntimeEnvironment) {
     await run("deploy:erc20Mock", {
-        name: "Mock Token 1",
-        symbol: "ERC20Mock",
+        name: "USDT Mock token",
+        symbol: "USDTMock",
     });
 };
 
